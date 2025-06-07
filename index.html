@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scholar Faculty Finder</title>
     <style>
+        /* General Reset & Body Styles */
         * {
             margin: 0;
             padding: 0;
@@ -20,6 +21,7 @@
             min-height: 100vh;
         }
 
+        /* Container for the main application */
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -29,6 +31,7 @@
             overflow: hidden;
         }
 
+        /* Header Section */
         .header {
             background: #fff;
             padding: 30px 20px 20px;
@@ -48,10 +51,12 @@
             font-size: 0.95rem;
         }
 
+        /* Form Container */
         .form-container {
             padding: 25px 20px;
         }
 
+        /* Date Info Display */
         .date-info {
             background: #f1f3f4;
             border: 1px solid #dadce0;
@@ -63,6 +68,7 @@
             text-align: center;
         }
 
+        /* Input Group Styling */
         .input-group {
             margin-bottom: 20px;
         }
@@ -75,7 +81,8 @@
             font-size: 0.9rem;
         }
 
-        .input-group input[type="text"] {
+        .input-group input[type="text"],
+        .input-group input[type="number"] { /* Apply to both text and number inputs */
             width: 100%;
             padding: 12px 14px;
             border: 1px solid #d1d5db;
@@ -85,12 +92,24 @@
             background: #fff;
         }
 
-        .input-group input[type="text"]:focus {
+        .input-group input[type="text"]:focus,
+        .input-group input[type="number"]:focus { /* Apply to both text and number inputs */
             outline: none;
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
+        /* Styling for the year range inputs */
+        .year-range-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .year-range-group .input-group {
+            flex: 1; /* Make inputs take equal width */
+        }
+
+        /* Strictness Slider Section */
         .strictness-container {
             margin-top: 15px;
         }
@@ -166,6 +185,7 @@
             line-height: 1.4;
         }
 
+        /* Search Button Styling */
         .search-button {
             width: 100%;
             padding: 14px;
@@ -188,6 +208,7 @@
             background: #1d4ed8;
         }
 
+        /* Note / Info Box */
         .note {
             background: #fef3c7;
             border: 1px solid #f59e0b;
@@ -198,6 +219,7 @@
             line-height: 1.5;
         }
 
+        /* Results Section */
         .results {
             margin-top: 25px;
             padding-top: 25px;
@@ -270,9 +292,10 @@
                 padding: 20px 15px;
             }
             
-            .input-group input[type="text"] {
+            .input-group input[type="text"],
+            .input-group input[type="number"] {
                 padding: 14px 12px;
-                font-size: 16px; /* Prevents zoom on iOS */
+                font-size: 16px; /* Prevents zoom on iOS when inputting numbers */
             }
             
             .search-button {
@@ -309,6 +332,10 @@
                 font-size: 0.75rem;
                 padding: 8px 6px;
             }
+
+            .year-range-group {
+                flex-direction: column; /* Stack year inputs on very small screens */
+            }
         }
 
         /* Focus states for accessibility */
@@ -327,14 +354,35 @@
     <div class="container">
         <div class="header">
             <h1>Scholar Faculty Finder</h1>
-            <p>Find US university faculty through Google Scholar research</p>
+            <p>Find university faculty through Google Scholar research</p>
         </div>
         
         <div class="form-container">
+            <!-- New Country Input -->
+            <div class="input-group">
+                <label for="country">Country (e.g., US, UK, Canada):</label>
+                <input type="text" id="country" placeholder="e.g., US, UK, Canada (leave blank for worldwide)">
+            </div>
+
+            <!-- Date Range Display -->
             <div class="date-info">
-                📅 <strong>Searching papers from 2020-2025</strong> (Last 5 years)
+                📅 <strong>Searching papers from 
+                <span id="displayStartYear"></span>-<span id="displayEndYear"></span></strong>
+            </div>
+
+            <!-- New Year Range Inputs -->
+            <div class="year-range-group">
+                <div class="input-group">
+                    <label for="startYear">Research Year (Start):</label>
+                    <input type="number" id="startYear" placeholder="e.g., 2015" min="1900" max="2099">
+                </div>
+                <div class="input-group">
+                    <label for="endYear">Research Year (End):</label>
+                    <input type="number" id="endYear" placeholder="e.g., 2025" min="1900" max="2099">
+                </div>
             </div>
             
+            <!-- Existing Keyword Inputs -->
             <div class="input-group">
                 <label for="titleKeywords">Keywords for Paper Titles:</label>
                 <input type="text" id="titleKeywords" placeholder="e.g., machine learning, artificial intelligence">
@@ -345,6 +393,7 @@
                 <input type="text" id="abstractKeywords" placeholder="e.g., neural networks, deep learning">
             </div>
             
+            <!-- Existing Strictness Slider -->
             <div class="input-group">
                 <div class="strictness-header">
                     <label>Search Strictness:</label>
@@ -367,7 +416,7 @@
             </button>
             
             <div class="note">
-                <strong>How it works:</strong> Enter your keywords and click search. The site will open Google Scholar with an advanced search that looks for papers with your keywords and filters for .edu sites to find US university faculty.
+                <strong>How it works:</strong> Enter your keywords, country, and year range. The site will open Google Scholar with an advanced search that looks for papers with your specified criteria and filters for academic domains (like .edu, .ac.uk) to find university faculty.
             </div>
             
             <div id="results" class="results" style="display: none;"></div>
@@ -375,41 +424,94 @@
     </div>
 
     <script>
-        // Sample data removed since we're opening Google Scholar directly
+        // Set default values for year inputs and update display on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentYear = new Date().getFullYear();
+            const defaultStartYear = currentYear - 4; // Default to last 5 years
+            const defaultEndYear = currentYear;
 
+            // Set initial values for year inputs
+            document.getElementById('startYear').value = defaultStartYear;
+            document.getElementById('endYear').value = defaultEndYear;
+            
+            // Update the displayed year range
+            updateYearDisplay();
+
+            // Add event listeners for year input changes to update the display
+            document.getElementById('startYear').addEventListener('input', updateYearDisplay);
+            document.getElementById('endYear').addEventListener('input', updateYearDisplay);
+        });
+
+        /**
+         * Updates the displayed year range in the 'date-info' section.
+         */
+        function updateYearDisplay() {
+            const startYear = document.getElementById('startYear').value;
+            const endYear = document.getElementById('endYear').value;
+            document.getElementById('displayStartYear').textContent = startYear;
+            document.getElementById('displayEndYear').textContent = endYear;
+        }
+
+        /**
+         * Performs the faculty search by constructing a Google Scholar URL
+         * based on user inputs and opens it in a new tab.
+         */
         function searchFaculty() {
+            // Get values from input fields
+            const country = document.getElementById('country').value.trim();
+            const startYear = document.getElementById('startYear').value.trim();
+            const endYear = document.getElementById('endYear').value.trim();
             const titleKeywords = document.getElementById('titleKeywords').value.trim();
             const abstractKeywords = document.getElementById('abstractKeywords').value.trim();
             const strictness = parseFloat(document.getElementById('strictness').value);
             
+            // Basic validation for keywords
             if (!titleKeywords && !abstractKeywords) {
-                alert('Please enter at least one keyword');
+                // Using a custom message instead of alert() for better user experience
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = `
+                    <div class="result-item" style="border-left: 3px solid #dc2626; background: #fee2e2; color: #991b1b;">
+                        <div class="result-title">⚠️ Input Error</div>
+                        <div class="result-authors">Please enter at least one keyword for paper titles or abstracts to perform a search.</div>
+                    </div>
+                `;
                 return;
             }
-            
-            // Calculate last 5 years range
-            const currentYear = new Date().getFullYear();
-            const startYear = currentYear - 4; // Last 5 years: current year and 4 previous years
-            
-            // Construct Google Scholar advanced search URL
+
+            // Validation for year range
+            if (startYear && endYear && (parseInt(startYear) > parseInt(endYear))) {
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = `
+                    <div class="result-item" style="border-left: 3px solid #dc2626; background: #fee2e2; color: #991b1b;">
+                        <div class="result-title">⚠️ Input Error</div>
+                        <div class="result-authors">The start year cannot be greater than the end year. Please correct the date range.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Initialize search query string
             let searchQuery = '';
             
-            // Add title keywords with strictness consideration
+            // Construct title keywords part of the query based on strictness
             if (titleKeywords) {
                 const titleTerms = titleKeywords.split(',').map(term => {
                     const cleanTerm = term.trim();
                     if (strictness >= 0.8) {
-                        // High strictness - exact phrase match
+                        // High strictness: exact phrase match in title
                         return `intitle:"${cleanTerm}"`;
                     } else if (strictness >= 0.4) {
-                        // Medium strictness - title contains all words
+                        // Medium strictness: all words must be in title
                         return `intitle:${cleanTerm}`;
                     } else {
-                        // Low strictness - any word in title
+                        // Low strictness: any word can be in title (OR logic)
                         return cleanTerm.split(' ').map(word => `intitle:${word.trim()}`).join(' OR ');
                     }
                 });
                 
+                // Combine title terms with AND/OR based on overall strictness
                 if (strictness >= 0.6) {
                     searchQuery += `(${titleTerms.join(' AND ')})`;
                 } else {
@@ -417,23 +519,24 @@
                 }
             }
             
-            // Add abstract keywords with strictness consideration
+            // Construct abstract keywords part of the query based on strictness
             if (abstractKeywords) {
-                if (searchQuery) searchQuery += ' AND ';
+                if (searchQuery) searchQuery += ' AND '; // Add 'AND' if title keywords already exist
                 const abstractTerms = abstractKeywords.split(',').map(term => {
                     const cleanTerm = term.trim();
                     if (strictness >= 0.8) {
-                        // High strictness - exact phrase
+                        // High strictness: exact phrase match anywhere
                         return `"${cleanTerm}"`;
                     } else if (strictness >= 0.4) {
-                        // Medium strictness - all words present
+                        // Medium strictness: all words must be present anywhere
                         return cleanTerm;
                     } else {
-                        // Low strictness - any word
+                        // Low strictness: any word can be present anywhere (OR logic)
                         return cleanTerm.split(' ').join(' OR ');
                     }
                 });
                 
+                // Combine abstract terms with AND/OR based on overall strictness
                 if (strictness >= 0.6) {
                     searchQuery += `(${abstractTerms.join(' AND ')})`;
                 } else {
@@ -441,47 +544,109 @@
                 }
             }
             
-            // Add .edu email filter to find US university faculty
-            searchQuery += ' AND site:edu';
-            
-            // Construct the Google Scholar URL with date range
-            const scholarURL = `https://scholar.google.com/scholar?q=${encodeURIComponent(searchQuery)}&as_ylo=${startYear}&as_yhi=${currentYear}`;
+            // Add country-specific domain filter based on common academic domains
+            let domainFilter = '';
+            if (country) {
+                const lowerCaseCountry = country.toLowerCase();
+                // Map common country names to their academic domain suffixes
+                switch (lowerCaseCountry) {
+                    case 'us':
+                    case 'united states':
+                        domainFilter = 'site:edu';
+                        break;
+                    case 'uk':
+                    case 'united kingdom':
+                        domainFilter = 'site:ac.uk';
+                        break;
+                    case 'canada':
+                        domainFilter = 'site:ca OR site:gc.ca'; // .ca for Canada generally, .gc.ca for government/academic
+                        break;
+                    case 'australia':
+                        domainFilter = 'site:edu.au';
+                        break;
+                    case 'germany':
+                        domainFilter = 'site:de'; // Generic for Germany, universities often use specific subdomains (e.g., .uni-something.de)
+                        break;
+                    case 'france':
+                        domainFilter = 'site:fr'; // Generic for France, universities often use specific subdomains (e.g., .univ-something.fr)
+                        break;
+                    case 'japan':
+                        domainFilter = 'site:ac.jp';
+                        break;
+                    case 'india':
+                        domainFilter = 'site:ac.in'; // Universities often use .ac.in or sometimes .edu
+                        break;
+                    case 'china':
+                        domainFilter = 'site:edu.cn';
+                        break;
+                    case 'brazil':
+                        domainFilter = 'site:br'; // Generic for Brazil, universities often use .edu.br
+                        break;
+                    case 'spain':
+                        domainFilter = 'site:es';
+                        break;
+                    default:
+                        // For other countries, append the country name to the search or use a broad filter
+                        // This might not be precise but offers a fallback.
+                        domainFilter = `site:${lowerCaseCountry}`; 
+                        break;
+                }
+            } else {
+                // If no country is specified, use a broader set of common academic domains
+                domainFilter = 'site:edu OR site:ac.uk OR site:ac.in OR site:ac.jp OR site:edu.cn OR site:ac.nz'; // Added .ac.nz for New Zealand
+            }
+
+            if (domainFilter) {
+                searchQuery += ` ${domainFilter}`;
+            }
+
+            // Construct the final Google Scholar URL with date range parameters
+            let scholarURL = `https://scholar.google.com/scholar?q=${encodeURIComponent(searchQuery)}`;
+            if (startYear) scholarURL += `&as_ylo=${startYear}`; // Add start year filter
+            if (endYear) scholarURL += `&as_yhi=${endYear}`;     // Add end year filter
             
             // Open Google Scholar in a new tab
             window.open(scholarURL, '_blank');
             
-            // Show confirmation message
+            // Display confirmation message and search parameters
             const resultsDiv = document.getElementById('results');
             resultsDiv.style.display = 'block';
             
+            // Determine strictness description for display
             let strictnessDesc = '';
             if (strictness >= 0.8) strictnessDesc = 'Very Strict (Exact matches only)';
             else if (strictness >= 0.6) strictnessDesc = 'Strict (All terms required)';
             else if (strictness >= 0.4) strictnessDesc = 'Moderate (Most terms required)';
             else if (strictness >= 0.2) strictnessDesc = 'Flexible (Some terms required)';
             else strictnessDesc = 'Very Flexible (Any terms accepted)';
+
+            // Prepare display values for country and year range
+            const displayedCountry = country ? country : 'Worldwide (General Academic Domains)';
+            const displayedYearRange = (startYear && endYear) ? `${startYear}-${endYear}` : 'All years';
             
+            // Update results div with search confirmation and parameters
             resultsDiv.innerHTML = `
                 <div class="result-item">
                     <div class="result-title">🚀 Search Launched!</div>
                     <div class="result-authors">Opening Google Scholar with your specialized search...</div>
                     <div class="result-details">
                         <strong>Search Parameters:</strong><br>
-                        📅 <strong>Date Range:</strong> ${startYear}-${currentYear} (Last 5 years)<br>
+                        🌍 <strong>Country:</strong> ${displayedCountry}<br>
+                        📅 <strong>Date Range:</strong> ${displayedYearRange}<br>
                         🎯 <strong>Strictness:</strong> ${strictness} - ${strictnessDesc}<br><br>
                         <strong>Search Query:</strong>
-                        <code>${searchQuery}</code>
+                        <code>${decodeURIComponent(searchQuery)}</code>
                     </div>
                 </div>
             `;
         }
 
-        // Update strictness value display
+        // Update strictness value display as the slider is moved
         document.getElementById('strictness').addEventListener('input', function(e) {
             document.getElementById('strictnessValue').textContent = e.target.value;
         });
         
-        // Allow Enter key to trigger search
+        // Allow Enter key to trigger the search from any input field
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 searchFaculty();
