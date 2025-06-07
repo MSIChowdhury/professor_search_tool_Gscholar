@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scholar Faculty Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 30px 20px 20px;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .form-container {
+            padding: 25px 20px;
+        }
+
+        .date-info {
+            background: #f1f3f4;
+            border: 1px solid #dadce0;
+            color: #5f6368;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+            background: #fff;
+        }
+
+        .input-group input[type="text"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .strictness-container {
+            margin-top: 15px;
+        }
+
+        .strictness-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .strictness-value {
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .slider-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #2563eb;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .strictness-desc {
+            font-size: 0.8rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .search-button {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .search-button:hover {
+            background: #2563eb;
+        }
+
+        .search-button:active {
+            background: #1d4ed8;
+        }
+
+        .note {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .results {
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .result-item {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 6px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .result-title {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        .result-authors {
+            color: #6b7280;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .result-details {
+            background: #eff6ff;
+            padding: 12px;
+            border-radius: 4px;
+            color: #1e40af;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .result-details code {
+            background: white;
+            padding: 6px 8px;
+            border-radius: 3px;
+            display: block;
+            margin-top: 8px;
+            word-break: break-all;
+            font-size: 0.8rem;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+                min-height: calc(100vh - 20px);
+            }
+            
+            .header {
+                padding: 20px 15px 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .form-container {
+                padding: 20px 15px;
+            }
+            
+            .input-group input[type="text"] {
+                padding: 14px 12px;
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .search-button {
+                padding: 16px;
+                font-size: 16px;
+            }
+            
+            .slider-container {
+                gap: 8px;
+            }
+            
+            .slider-label {
+                min-width: 45px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            .strictness-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .result-details code {
+                font-size: 0.75rem;
+                padding: 8px 6px;
+            }
+        }
+
+        /* Focus states for accessibility */
+        .search-button:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        input[type="range"]:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Scholar Faculty Finder</h1>
+            <p>Find US university faculty through Google Scholar research</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="date-info">
+                📅 <strong>Searching papers from 2020-2025</strong> (Last 5 years)
+            </div>
+            
+            <div class="input-group">
+                <label for="titleKeywords">Keywords for Paper Titles:</label>
+                <input type="text" id="titleKeywords" placeholder="e.g., machine learning, artificial intelligence">
+            </div>
+            
+            <div class="input-group">
+                <label for="abstractKeywords">Keywords for Abstracts:</label>
+                <input type="text" id="abstractKeywords" placeholder="e.g., neural networks, deep learning">
+            </div>
+            
+            <div class="input-group">
+                <div class="strictness-header">
+                    <label>Search Strictness:</label>
+                    <span class="strictness-value" id="strictnessValue">0.5</span>
+                </div>
+                <div class="strictness-container">
+                    <div class="slider-container">
+                        <span class="slider-label">Flexible</span>
+                        <input type="range" id="strictness" min="0" max="1" step="0.1" value="0.5">
+                        <span class="slider-label">Exact</span>
+                    </div>
+                    <div class="strictness-desc">
+                        <strong>Flexible:</strong> Broad search with related terms &nbsp;•&nbsp; <strong>Exact:</strong> Only exact keyword matches
+                    </div>
+                </div>
+            </div>
+            
+            <button class="search-button" onclick="searchFaculty()">
+                🔍 Search Faculty
+            </button>
+            
+            <div class="note">
+                <strong>How it works:</strong> Enter your keywords and click search. The site will open Google Scholar with an advanced search that looks for papers with your keywords and filters for .edu sites to find US university faculty.
+            </div>
+            
+            <div id="results" class="results" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data removed since we're opening Google Scholar directly
+
+        function searchFaculty() {
+            const titleKeywords = document.getElementById('titleKeywords').value.trim();
+            const abstractKeywords = document.getElementById('abstractKeywords').value.trim();
+            const strictness = parseFloat(document.getElementById('strictness').value);
+            
+            if (!titleKeywords && !abstractKeywords) {
+                alert('Please enter at least one keyword');
+                return;
+            }
+            
+            // Calculate last 5 years range
+            const currentYear = new Date().getFullYear();
+            const startYear = currentYear - 4; // Last 5 years: current year and 4 previous years
+            
+            // Construct Google Scholar advanced search URL
+            let searchQuery = '';
+            
+            // Add title keywords with strictness consideration
+            if (titleKeywords) {
+                const titleTerms = titleKeywords.split(',').map(term => {
+                    const cleanTerm = term.trim();
+                    if (strictness >= 0.8) {
+                        // High strictness - exact phrase match
+                        return `intitle:"${cleanTerm}"`;
+                    } else if (strictness >= 0.4) {
+                        // Medium strictness - title contains all words
+                        return `intitle:${cleanTerm}`;
+                    } else {
+                        // Low strictness - any word in title
+                        return cleanTerm.split(' ').map(word => `intitle:${word.trim()}`).join(' OR ');
+                    }
+                });
+                
+                if (strictness >= 0.6) {
+                    searchQuery += `(${titleTerms.join(' AND ')})`;
+                } else {
+                    searchQuery += `(${titleTerms.join(' OR ')})`;
+                }
+            }
+            
+            // Add abstract keywords with strictness consideration
+            if (abstractKeywords) {
+                if (searchQuery) searchQuery += ' AND ';
+                const abstractTerms = abstractKeywords.split(',').map(term => {
+                    const cleanTerm = term.trim();
+                    if (strictness >= 0.8) {
+                        // High strictness - exact phrase
+                        return `"${cleanTerm}"`;
+                    } else if (strictness >= 0.4) {
+                        // Medium strictness - all words present
+                        return cleanTerm;
+                    } else {
+                        // Low strictness - any word
+                        return cleanTerm.split(' ').join(' OR ');
+                    }
+                });
+                
+                if (strictness >= 0.6) {
+                    searchQuery += `(${abstractTerms.join(' AND ')})`;
+                } else {
+                    searchQuery += `(${abstractTerms.join(' OR ')})`;
+                }
+            }
+            
+            // Add .edu email filter to find US university faculty
+            searchQuery += ' AND site:edu';
+            
+            // Construct the Google Scholar URL with date range
+            const scholarURL = `https://scholar.google.com/scholar?q=${encodeURIComponent(searchQuery)}&as_ylo=${startYear}&as_yhi=${currentYear}`;
+            
+            // Open Google Scholar in a new tab
+            window.open(scholarURL, '_blank');
+            
+            // Show confirmation message
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            
+            let strictnessDesc = '';
+            if (strictness >= 0.8) strictnessDesc = 'Very Strict (Exact matches only)';
+            else if (strictness >= 0.6) strictnessDesc = 'Strict (All terms required)';
+            else if (strictness >= 0.4) strictnessDesc = 'Moderate (Most terms required)';
+            else if (strictness >= 0.2) strictnessDesc = 'Flexible (Some terms required)';
+            else strictnessDesc = 'Very Flexible (Any terms accepted)';
+            
+            resultsDiv.innerHTML = `
+                <div class="result-item">
+                    <div class="result-title">🚀 Search Launched!</div>
+                    <div class="result-authors">Opening Google Scholar with your specialized search...</div>
+                    <div class="result-details">
+                        <strong>Search Parameters:</strong><br>
+                        📅 <strong>Date Range:</strong> ${startYear}-${currentYear} (Last 5 years)<br>
+                        🎯 <strong>Strictness:</strong> ${strictness} - ${strictnessDesc}<br><br>
+                        <strong>Search Query:</strong>
+                        <code>${searchQuery}</code>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Update strictness value display
+        document.getElementById('strictness').addEventListener('input', function(e) {
+            document.getElementById('strictnessValue').textContent = e.target.value;
+        });
+        
+        // Allow Enter key to trigger search
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchFaculty();
+            }
+        });
+    </script>
+</body>
+</html>
