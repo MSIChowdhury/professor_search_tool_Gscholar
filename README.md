@@ -97,25 +97,22 @@ professor-finder/
 
 ## 🚀 Getting Started
 
-### Option 1: Direct Use
-1. Download the `index.html` file
-2. Open it in any modern web browser
-3. Start searching for faculty!
+### Option 1: Use Online
+Simply visit the live tool at: **https://msichowdhury.github.io/professor_search_tool_Gscholar/**
 
-### Option 2: Web Hosting
-1. Upload the `index.html` file to any web server
-2. Access via your domain/hosting service
-3. Share with colleagues and students
+No installation required - start searching for faculty immediately!
 
-### Option 3: Local Development
+### Option 2: Clone and Customize
+Clone the project to make your own modifications and use it as you see fit:
+
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/professor-finder.git
+git clone https://github.com/msichowdhury/professor_search_tool_Gscholar.git
 
 # Navigate to the directory
-cd professor-finder
+cd professor_search_tool_Gscholar
 
-# Open in browser (or serve with any local server)
+# Open in browser or make your customizations
 open index.html
 ```
 
