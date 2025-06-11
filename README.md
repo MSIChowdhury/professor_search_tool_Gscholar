@@ -206,8 +206,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 *Texas State University*
 
 - 📧 Email: [msichowdhury@txstate.edu]
-- 🐦 Twitter: [@ravenxeen]
-- 💼 LinkedIn: [linkedin.com/in/msichowdhury]
+- 🐦 Twitter: [(https://x.com/RavenXeen)]
+- 💼 LinkedIn: [(https://www.linkedin.com/in/msichowdhury/)]
 - 🌐 Website: [(https://msichowdhury.github.io/MSI-Chowdhury/)]
 
 ---
