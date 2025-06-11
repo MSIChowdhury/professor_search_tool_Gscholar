@@ -183,8 +183,6 @@ Contributions are welcome! Here are some ways you can help:
 ## 📈 Future Enhancements
 
 - [ ] Export search results to CSV/JSON
-- [ ] Save and manage favorite searches
-- [ ] Integration with academic databases beyond Google Scholar
 - [ ] Batch processing for multiple keyword sets
 - [ ] Author citation metrics integration
 - [ ] University ranking integration
